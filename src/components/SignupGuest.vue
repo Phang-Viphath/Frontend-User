@@ -140,6 +140,6 @@ const submit = async () => {
 }
 
 const handleGoogleLogin = () => {
-  window.location.href = 'http://localhost:8000/auth/guest/google'
+  window.location.href = import.meta.env.VITE_GOOGLE
 }
 </script>
