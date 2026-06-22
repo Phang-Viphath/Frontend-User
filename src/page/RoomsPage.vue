@@ -194,8 +194,8 @@ const handleBookNow = (roomId) => {
     // Store the intended roomId for after login
     sessionStorage.setItem('pendingBookingRoomId', roomId)
     // Redirect to Google login
-    window.location.href = 'http://localhost:8000/auth/guest/google'
-  }
+    window.location.href = import.meta.env.VITE_GOOGLE
+  } 
 }
 
 const fallbackImage = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1600&q=80'
