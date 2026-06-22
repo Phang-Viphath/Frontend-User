@@ -140,6 +140,6 @@ const submit = async () => {
 }
 
 const handleGoogleLogin = () => {
-  window.location.href = import.meta.env.GOOGLE
+  window.location.href = import.meta.env.VITE_GOOGLE
 }
 </script>
