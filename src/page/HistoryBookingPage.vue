@@ -7,6 +7,7 @@
         <div class="inline-flex items-center gap-2 rounded-full bg-[color:rgba(54,226,123,0.1)] px-3 py-1 text-xs font-medium text-[color:var(--color-primary)] mb-4 ring-1 ring-[color:rgba(54,226,123,0.2)]">
           <span class="material-symbols-outlined text-[14px]">history</span>
           Your Activity
+          <span v-if="isLoading" class="material-symbols-outlined animate-spin text-[14px] ml-1">progress_activity</span>
         </div>
         <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
           Booking <span class="bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent">History</span>
@@ -33,10 +34,37 @@
 
     <div v-else class="relative z-10">
       
-      <!-- State: Loading -->
-      <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-         <span class="material-symbols-outlined animate-spin text-4xl text-[color:var(--color-primary)]">progress_activity</span>
-         <p class="mt-4 text-sm font-medium text-white/65 animate-pulse">Loading your beautiful stays...</p>
+      <!-- State: Loading Skeleton -->
+      <div v-if="isLoading" class="grid gap-6">
+        <div v-for="n in 3" :key="n" class="group relative overflow-hidden rounded-[2rem] border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] p-6 sm:p-8 backdrop-blur-xl shadow-sm">
+          <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between animate-pulse">
+            <div class="flex-1 min-w-0 flex gap-5">
+              <div class="hidden sm:flex h-16 w-16 shrink-0 rounded-2xl bg-white/10"></div>
+              <div class="space-y-3 flex-1 py-1">
+                <div class="flex items-center gap-3">
+                  <div class="h-6 w-48 rounded-md bg-white/10"></div>
+                  <div class="h-5 w-20 rounded-full bg-white/10"></div>
+                </div>
+                <div class="flex flex-wrap items-center gap-4 mt-3">
+                  <div class="h-4 w-40 rounded-md bg-white/10"></div>
+                  <div class="h-4 w-32 rounded-md bg-white/10"></div>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col items-start lg:items-end gap-4 shrink-0 border-t border-white/10 lg:border-t-0 pt-5 lg:pt-0 w-full lg:w-auto">
+              <div class="w-full lg:w-auto flex flex-col items-start lg:items-end gap-2">
+                <div class="h-3 w-24 rounded-md bg-white/10"></div>
+                <div class="h-8 w-28 rounded-md bg-white/10"></div>
+              </div>
+              <div class="h-11 w-36 rounded-xl bg-white/10 mt-1"></div>
+            </div>
+          </div>
+          <div class="mt-6 flex flex-wrap items-center gap-5 rounded-xl bg-black/20 p-4 border border-white/5 animate-pulse">
+            <div class="h-4 w-32 rounded-md bg-white/10"></div>
+            <div class="hidden sm:block h-4 w-px bg-white/10"></div>
+            <div class="h-4 w-32 rounded-md bg-white/10"></div>
+          </div>
+        </div>
       </div>
 
       <!-- State: Error -->
@@ -114,14 +142,27 @@
                   ${{ Number(r.total || 0).toFixed(2) }}
                 </div>
               </div>
-              <button
-                type="button"
-                class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-6 text-sm font-semibold text-white/90 transition-all hover:bg-white/10 hover:border-white/20 hover:shadow-sm active:scale-95"
-                @click="printInvoice(r)"
-              >
-                <span class="material-symbols-outlined text-[18px]">print</span>
-                Print Invoice
-              </button>
+              <div class="flex flex-wrap items-center gap-3 mt-4 lg:mt-0">
+                <button
+                  v-if="r.status?.toLowerCase() === 'pending'"
+                  type="button"
+                  class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-6 text-sm font-semibold text-red-400 transition-all hover:bg-red-500/20 hover:border-red-500/30 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  :disabled="isLoading || isSaving"
+                  @click="cancelReservation(r.id)"
+                >
+                  <span class="material-symbols-outlined text-[18px]">cancel</span>
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-6 text-sm font-semibold text-white/90 transition-all hover:bg-white/10 hover:border-white/20 hover:shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  :disabled="isLoading || isSaving"
+                  @click="printInvoice(r)"
+                >
+                  <span class="material-symbols-outlined text-[18px]">print</span>
+                  Print Invoice
+                </button>
+              </div>
             </div>
           </div>
 
@@ -156,7 +197,8 @@ import { useGuestStore } from '@/stores/guest'
 const toast = getCurrentInstance()?.appContext.config.globalProperties.$toast
 const guestStore = useGuestStore()
 
-const loading = ref(false)
+const isLoading = ref(false)
+const isSaving = ref(false)
 const error = ref('')
 const items = ref([])
 
@@ -436,7 +478,7 @@ const load = async () => {
     return
   }
 
-  loading.value = true
+  isLoading.value = true
   error.value = ''
   try {
     const res = await apiClient.get('/public/reservations/history', { guest_id: guestStore.guest.id })
@@ -446,7 +488,23 @@ const load = async () => {
     error.value = msg
     toast?.error(msg)
   } finally {
-    loading.value = false
+    isLoading.value = false
+  }
+}
+
+const cancelReservation = async (id) => {
+  if (!confirm('Are you sure you want to cancel this reservation?')) return
+  
+  isSaving.value = true
+  try {
+    await apiClient.post(`/public/reservations/${id}/cancel`)
+    toast?.success('Reservation cancelled successfully.')
+    await load()
+  } catch (e) {
+    const msg = e?.response?.data?.message || 'Failed to cancel reservation.'
+    toast?.error(msg)
+  } finally {
+    isSaving.value = false
   }
 }
 
