@@ -1,65 +1,148 @@
 <template>
-  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-    <div class="flex flex-col gap-2">
-      <h1 class="text-3xl font-bold tracking-tight">Booking History</h1>
-      <p class="text-sm text-white/65">View your reservations and stay details.</p>
-    </div>
+  <div class="min-h-[calc(100vh-80px)] relative overflow-hidden bg-gray-50 dark:bg-[#0b0b0f] text-gray-900 dark:text-gray-100 font-display transition-colors duration-300">
+    <!-- Ambient Background Glows -->
+    <div class="absolute top-0 left-1/4 h-[500px] w-[500px] rounded-full bg-green-500/10 blur-[100px] pointer-events-none"></div>
+    <div class="absolute bottom-0 right-1/4 h-[500px] w-[500px] rounded-full bg-emerald-500/10 blur-[100px] pointer-events-none"></div>
 
-    <div v-if="!isLoggedIn" class="mt-8 rounded-3xl border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] p-6">
-      <div class="text-sm font-semibold">You are not signed in</div>
-      <p class="mt-2 text-sm text-white/65">Please login to view your booking history.</p>
-      <RouterLink
-        to="/login"
-        class="mt-5 inline-flex h-11 items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-5 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)]"
-      >
-        Go to Login
-      </RouterLink>
-    </div>
-
-    <div v-else class="mt-8">
-      <div v-if="loading" class="rounded-3xl border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] p-6 text-sm text-white/70">
-        Loading your bookings...
-      </div>
-
-      <div v-else-if="error" class="rounded-3xl border border-red-500/20 bg-red-500/10 p-6 text-sm text-red-200">
-        {{ error }}
-      </div>
-
-      <div v-else-if="items.length === 0" class="rounded-3xl border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] p-6 text-sm text-white/70">
-        No reservations found.
-      </div>
-
-      <div v-else class="grid gap-4">
-        <div
-          v-for="r in items"
-          :key="r.id"
-          class="rounded-3xl border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] p-6"
-        >
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div class="min-w-0">
-              <div class="text-sm font-semibold">{{ r.room?.name || 'Room' }}</div>
-              <div class="mt-1 text-sm text-white/70">
-                {{ formatDate(r.check_in) }} - {{ formatDate(r.check_out) }}
-              </div>
-              <div class="mt-1 text-xs text-white/60">Reservation #{{ r.id }}</div>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-3">
-              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/75">{{ r.status || 'Pending' }}</span>
-              <span class="text-sm font-semibold text-[color:var(--color-primary)]">${{ Number(r.total || 0).toFixed(2) }}</span>
-              <button
-                type="button"
-                class="inline-flex h-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 text-xs font-semibold text-white/85 transition hover:bg-white/10"
-                @click="printInvoice(r)"
-              >
-                Print Invoice
-              </button>
-            </div>
+    <div class="relative mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
+      
+      <!-- Header Area -->
+      <div class="mb-12 flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full bg-green-500/10 px-3 py-1 text-xs font-medium text-green-600 dark:text-green-400 mb-4 ring-1 ring-green-500/20">
+            <span class="material-symbols-outlined text-[14px]">history</span>
+            Your Activity
           </div>
+          <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+            Booking <span class="bg-gradient-to-r from-green-500 to-emerald-400 bg-clip-text text-transparent">History</span>
+          </h1>
+          <p class="mt-4 text-base text-gray-500 dark:text-gray-400 max-w-xl leading-relaxed">
+            Manage your past and upcoming stays. Download invoices, check statuses, and review your room details all in one place.
+          </p>
+        </div>
+      </div>
 
-          <div v-if="r.room" class="mt-4 grid gap-2 text-sm text-white/70 sm:grid-cols-2">
-            <div>Type: <span class="text-white/90">{{ r.room.type || 'N/A' }}</span></div>
-            <div>Price/night: <span class="text-white/90">${{ Number(r.room.price || 0).toFixed(2) }}</span></div>
+      <!-- State: Not Logged In -->
+      <div v-if="!isLoggedIn" class="relative overflow-hidden rounded-[2rem] bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 p-10 text-center shadow-xl">
+        <span class="material-symbols-outlined text-[48px] text-gray-400 mb-4">lock</span>
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Authentication Required</h3>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">Please securely log in to access your personal reservation history and invoices.</p>
+        <RouterLink
+          to="/login"
+          class="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 px-8 text-sm font-semibold text-white shadow-lg shadow-green-500/25 transition-all hover:scale-105 hover:shadow-green-500/40"
+        >
+          <span class="material-symbols-outlined text-[18px]">login</span>
+          Sign In to Continue
+        </RouterLink>
+      </div>
+
+      <div v-else class="relative z-10">
+        
+        <!-- State: Loading -->
+        <div v-if="loading" class="flex flex-col items-center justify-center py-20">
+           <span class="material-symbols-outlined animate-spin text-4xl text-green-500">progress_activity</span>
+           <p class="mt-4 text-sm font-medium text-gray-500 dark:text-gray-400 animate-pulse">Loading your beautiful stays...</p>
+        </div>
+
+        <!-- State: Error -->
+        <div v-else-if="error" class="rounded-[2rem] border border-red-500/20 bg-red-50 dark:bg-red-500/10 p-8 text-center backdrop-blur-md">
+          <span class="material-symbols-outlined text-[40px] text-red-500 mb-3">error</span>
+          <h3 class="text-lg font-semibold text-red-700 dark:text-red-400">Oops, something went wrong</h3>
+          <p class="mt-2 text-sm text-red-600 dark:text-red-300">{{ error }}</p>
+        </div>
+
+        <!-- State: Empty -->
+        <div v-else-if="items.length === 0" class="flex flex-col items-center justify-center rounded-[2rem] border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl p-16 text-center shadow-lg">
+          <div class="h-24 w-24 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-6">
+            <span class="material-symbols-outlined text-[40px] text-gray-400">luggage</span>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">No Reservations Yet</h3>
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">Looks like you haven't booked any stays with us yet. When you do, they will appear right here.</p>
+          <RouterLink
+            to="/rooms"
+            class="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gray-900 dark:bg-white px-8 text-sm font-semibold text-white dark:text-gray-900 shadow-md transition-all hover:scale-105 hover:shadow-lg"
+          >
+            Explore Rooms
+          </RouterLink>
+        </div>
+
+        <!-- State: Loaded -->
+        <div v-else class="grid gap-6">
+          <div
+            v-for="r in items"
+            :key="r.id"
+            class="group relative overflow-hidden rounded-[2rem] border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-[#1e293b]/60 p-6 sm:p-8 backdrop-blur-xl shadow-sm hover:shadow-2xl hover:shadow-green-500/10 transition-all duration-300 hover:-translate-y-1"
+          >
+            <!-- Decorative accent line on hover -->
+            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-green-400 to-emerald-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
+            <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              
+              <!-- Left: Room & Dates -->
+              <div class="flex-1 min-w-0 flex gap-5">
+                <div class="hidden sm:flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border border-green-100 dark:border-green-900/50">
+                  <span class="material-symbols-outlined text-[32px]">bed</span>
+                </div>
+                <div>
+                  <div class="flex items-center gap-3 mb-1">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white truncate">{{ r.room?.name || 'Room' }}</h2>
+                    <span 
+                      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide uppercase"
+                      :class="[
+                        r.status?.toLowerCase() === 'confirmed' || r.status?.toLowerCase() === 'paid' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 ring-1 ring-green-600/20' : 
+                        r.status?.toLowerCase() === 'cancelled' ? 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400 ring-1 ring-red-600/20' : 
+                        'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400 ring-1 ring-yellow-600/20'
+                      ]"
+                    >
+                      {{ r.status || 'Pending' }}
+                    </span>
+                  </div>
+                  
+                  <div class="flex flex-wrap items-center gap-y-2 gap-x-5 text-sm text-gray-500 dark:text-gray-400 mt-3">
+                    <div class="flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                      <span>{{ formatDate(r.check_in) }} <span class="mx-1">&rarr;</span> {{ formatDate(r.check_out) }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-[18px]">receipt</span>
+                      <span>Reservation #{{ r.id }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Price & Actions -->
+              <div class="flex flex-col items-start lg:items-end gap-4 shrink-0 border-t border-gray-100 dark:border-gray-800 lg:border-t-0 pt-5 lg:pt-0">
+                <div class="text-left lg:text-right">
+                  <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">Total Amount</p>
+                  <div class="text-3xl font-black bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+                    ${{ Number(r.total || 0).toFixed(2) }}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-gray-200 dark:border-white/10 bg-white/50 dark:bg-transparent px-6 text-sm font-semibold text-gray-700 dark:text-gray-200 transition-all hover:bg-white dark:hover:bg-white/5 hover:border-gray-300 dark:hover:border-white/20 hover:shadow-sm active:scale-95"
+                  @click="printInvoice(r)"
+                >
+                  <span class="material-symbols-outlined text-[18px]">print</span>
+                  Print Invoice
+                </button>
+              </div>
+            </div>
+
+            <!-- Details Footer -->
+            <div class="mt-6 flex flex-wrap items-center gap-5 rounded-xl bg-gray-50/50 dark:bg-black/20 p-4 text-sm border border-gray-100 dark:border-white/5">
+              <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <span class="material-symbols-outlined text-[18px]">category</span>
+                <span>Room Type: <strong class="text-gray-900 dark:text-white font-medium">{{ r.room?.type || 'N/A' }}</strong></span>
+              </div>
+              <div class="hidden sm:block h-4 w-px bg-gray-300 dark:bg-gray-700"></div>
+              <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <span class="material-symbols-outlined text-[18px]">payments</span>
+                <span>Rate per night: <strong class="text-gray-900 dark:text-white font-medium">${{ Number(r.room?.price || 0).toFixed(2) }}</strong></span>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
