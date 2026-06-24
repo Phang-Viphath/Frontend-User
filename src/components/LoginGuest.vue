@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-3xl border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] p-6">
     <div class="text-sm font-semibold">Guest Login</div>
-    <p class="mt-2 text-sm text-white/65">Enter your email to view bookings and continue faster.</p>
+    <p class="mt-2 text-sm text-white/65">Enter your email and password to view bookings and continue faster.</p>
 
     <form class="mt-6 grid gap-4" @submit.prevent="submit">
       <label class="grid gap-1">
@@ -9,6 +9,15 @@
         <input
           v-model.trim="email"
           type="email"
+          class="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none transition focus:border-white/25"
+        />
+      </label>
+
+      <label class="grid gap-1">
+        <span class="text-xs text-white/60">Password</span>
+        <input
+          v-model.trim="password"
+          type="password"
           class="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none transition focus:border-white/25"
         />
       </label>
@@ -63,17 +72,18 @@ const toast = getCurrentInstance()?.appContext.config.globalProperties.$toast
 const guestStore = useGuestStore()
 
 const email = ref('')
+const password = ref('')
 const loading = ref(false)
 
 const submit = async () => {
-  if (!email.value) {
-    toast?.warning('Please enter your email.')
+  if (!email.value || !password.value) {
+    toast?.warning('Please enter your email and password.')
     return
   }
 
   loading.value = true
   try {
-    const res = await apiClient.post('/public/guests/login', { email: email.value })
+    const res = await apiClient.post('/public/guests/login', { email: email.value, password: password.value })
     const guest = res?.guest
     if (!guest?.id) {
       toast?.error('Login failed.')

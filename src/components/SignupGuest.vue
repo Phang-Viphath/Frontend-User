@@ -1,8 +1,7 @@
 <template>
   <div class="rounded-3xl border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] p-6">
     <div class="text-sm font-semibold">Create Guest Account</div>
-    <p class="mt-2 text-sm text-white/65">Create an account with your email. No password is required in this demo
-      backend.</p>
+    <p class="mt-2 text-sm text-white/65">Create an account with your email and password.</p>
 
     <form class="mt-6 grid gap-4" @submit.prevent="submit">
       <label class="grid gap-1">
@@ -14,6 +13,12 @@
       <label class="grid gap-1">
         <span class="text-xs text-white/60">Email</span>
         <input v-model.trim="form.email" type="email"
+          class="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none transition focus:border-white/25" />
+      </label>
+
+      <label class="grid gap-1">
+        <span class="text-xs text-white/60">Password</span>
+        <input v-model.trim="form.password" type="password"
           class="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none transition focus:border-white/25" />
       </label>
 
@@ -89,6 +94,7 @@ const previewUrl = ref('')
 const form = reactive({
   name: '',
   email: '',
+  password: '',
   phone: '',
 })
 
@@ -99,8 +105,8 @@ const onFileChange = e => {
 }
 
 const submit = async () => {
-  if (!form.name || !form.email) {
-    toast?.warning('Please enter your name and email.')
+  if (!form.name || !form.email || !form.password) {
+    toast?.warning('Please enter your name, email and password.')
     return
   }
 
@@ -109,6 +115,7 @@ const submit = async () => {
     const data = new FormData()
     data.append('name', form.name)
     data.append('email', form.email)
+    data.append('password', form.password)
     if (form.phone) data.append('phone', form.phone)
     if (imageFile.value) data.append('image', imageFile.value)
 
