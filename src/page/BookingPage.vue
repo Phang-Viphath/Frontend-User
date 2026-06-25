@@ -139,6 +139,13 @@
                 class="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none transition focus:border-white/25" />
             </label>
 
+            <label v-if="!guestStore.isLoggedIn" class="grid gap-1">
+              <span class="text-xs text-white/60">Password</span>
+              <input v-model.trim="guest.password" type="password"
+                placeholder="Required to create or access account"
+                class="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none transition focus:border-white/25" />
+            </label>
+
             <label class="grid gap-1">
               <span class="text-xs text-white/60">Notes (optional)</span>
               <textarea v-model.trim="guest.notes" rows="4"
@@ -394,6 +401,7 @@ const guest = reactive({
   name: '',
   phone: '',
   email: '',
+  password: '',
   notes: '',
 })
 
@@ -451,9 +459,14 @@ const selectRoom = (room) => {
 }
 
 const ensureGuestId = async () => {
+  if (guestStore.isLoggedIn && guestStore.guest?.id) {
+    return guestStore.guest.id
+  }
+
   const email = (guest.email || '').trim()
   const name = (guest.name || '').trim()
   const phone = (guest.phone || '').trim()
+  const password = (guest.password || '').trim()
 
   if (!email) {
     throw new Error('Please enter your email.')
@@ -461,11 +474,19 @@ const ensureGuestId = async () => {
   if (!name) {
     throw new Error('Please enter your full name.')
   }
+  if (!password) {
+    throw new Error('Please enter a password.')
+  }
+  if (password.length < 6) {
+    throw new Error('Password must be at least 6 characters.')
+  }
 
   try {
-    const res = await apiClient.post('/public/guests/login', { email })
+    const res = await apiClient.post('/public/guests/login', { email, password })
     const id = res?.guest?.id
     if (!id) throw new Error('Guest login failed.')
+    if (res.token) guestStore.setToken(res.token)
+    guestStore.setGuest(res.guest)
     return id
   } catch (e) {
     const status = e?.response?.status
@@ -475,9 +496,11 @@ const ensureGuestId = async () => {
     }
   }
 
-  const created = await apiClient.post('/public/guests', { name, email, phone: phone || null })
+  const created = await apiClient.post('/public/guests', { name, email, phone: phone || null, password })
   const id = created?.guest?.id
   if (!id) throw new Error('Failed to create guest.')
+  guestStore.setGuest(created.guest)
+  // Assuming login token isn't needed or available immediately after public store
   return id
 }
 
