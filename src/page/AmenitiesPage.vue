@@ -49,10 +49,10 @@
               </div>
             </div>
           </div>
-          <RouterLink to="/booking"
-            class="mt-7 inline-flex items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-5 py-3 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)]">
+          <button @click="handleBookNow"
+            class="mt-7 inline-flex items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-5 py-3 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)] cursor-pointer">
             Book Your Stay
-          </RouterLink>
+          </button>
         </div>
       </div>
     </div>
@@ -60,7 +60,20 @@
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { useGuestStore } from '@/stores/guest'
+
+const router = useRouter()
+const guestStore = useGuestStore()
+
+const handleBookNow = () => {
+  if (!guestStore.isLoggedIn) {
+    sessionStorage.setItem('pendingBooking', 'true')
+    window.location.href = import.meta.env.VITE_GOOGLE
+  } else {
+    router.push('/booking')
+  }
+}
 
 const amenities = [
   { icon: 'pool', title: 'Swimming pool', desc: 'A calm pool area for afternoon relaxation.' },

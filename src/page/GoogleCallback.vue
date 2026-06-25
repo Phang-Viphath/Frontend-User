@@ -31,11 +31,23 @@ onMounted(() => {
     }
     guestStore.setGuest(guest)
 
-    // Check if there's a pending booking roomId
     const pendingRoomId = sessionStorage.getItem('pendingBookingRoomId')
+    const pendingBooking = sessionStorage.getItem('pendingBooking')
+    const pendingBookingQueryStr = sessionStorage.getItem('pendingBookingQuery')
+
     if (pendingRoomId) {
       sessionStorage.removeItem('pendingBookingRoomId')
       router.push({ path: '/booking', query: { roomId: pendingRoomId } })
+    } else if (pendingBooking) {
+      sessionStorage.removeItem('pendingBooking')
+      let query = {}
+      if (pendingBookingQueryStr) {
+        try {
+          query = JSON.parse(pendingBookingQueryStr)
+        } catch (e) {}
+        sessionStorage.removeItem('pendingBookingQuery')
+      }
+      router.push({ path: '/booking', query })
     } else {
       router.push('/')
     }

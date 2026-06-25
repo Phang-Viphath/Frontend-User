@@ -28,19 +28,32 @@
           <div class="text-sm font-semibold">Want a tailored stay?</div>
           <div class="mt-1 text-sm text-white/65">Book direct for the best rates and fast confirmation.</div>
         </div>
-        <RouterLink
-          to="/booking"
-          class="mt-4 inline-flex items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-5 py-3 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)] md:mt-0"
+        <button
+          @click="handleBookNow"
+          class="mt-4 inline-flex items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-5 py-3 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)] md:mt-0 cursor-pointer"
         >
           Book Now
-        </RouterLink>
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { useGuestStore } from '@/stores/guest'
+
+const router = useRouter()
+const guestStore = useGuestStore()
+
+const handleBookNow = () => {
+  if (!guestStore.isLoggedIn) {
+    sessionStorage.setItem('pendingBooking', 'true')
+    window.location.href = import.meta.env.VITE_GOOGLE
+  } else {
+    router.push('/booking')
+  }
+}
 import image1 from '../assets/gallery1.jpg'
 import image2 from '../assets/gallery2.jpg'
 import image3 from '../assets/gallery3.jpg'

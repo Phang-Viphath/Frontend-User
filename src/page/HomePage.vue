@@ -25,10 +25,10 @@
             </p>
 
             <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <RouterLink to="/booking"
-                class="inline-flex items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-5 py-3 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)]">
+              <button @click="handleBookNow"
+                class="inline-flex items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-5 py-3 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)] cursor-pointer">
                 Book Now
-              </RouterLink>
+              </button>
               <RouterLink to="/rooms"
                 class="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white/85 transition hover:bg-white/10">
                 View Rooms
@@ -139,8 +139,19 @@
 <script setup>
 import { reactive } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
+import { useGuestStore } from '@/stores/guest'
 
 const router = useRouter()
+const guestStore = useGuestStore()
+
+const handleBookNow = () => {
+  if (!guestStore.isLoggedIn) {
+    sessionStorage.setItem('pendingBooking', 'true')
+    window.location.href = import.meta.env.VITE_GOOGLE
+  } else {
+    router.push('/booking')
+  }
+}
 
 const form = reactive({
   checkIn: '',
@@ -149,6 +160,17 @@ const form = reactive({
 })
 
 const goBooking = () => {
+  if (!guestStore.isLoggedIn) {
+    sessionStorage.setItem('pendingBooking', 'true')
+    sessionStorage.setItem('pendingBookingQuery', JSON.stringify({
+      checkIn: form.checkIn || undefined,
+      checkOut: form.checkOut || undefined,
+      guests: String(form.guests || 2),
+    }))
+    window.location.href = import.meta.env.VITE_GOOGLE
+    return
+  }
+
   router.push({
     path: '/booking',
     query: {

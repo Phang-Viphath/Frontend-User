@@ -38,12 +38,12 @@
               </div>
             </div>
 
-            <RouterLink
-              to="/booking"
-              class="mt-6 inline-flex items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-5 py-3 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)]"
+            <button
+              @click="handleBookNow"
+              class="mt-6 inline-flex items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-5 py-3 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)] cursor-pointer"
             >
               Book Now
-            </RouterLink>
+            </button>
           </div>
         </div>
       </div>
@@ -84,7 +84,20 @@
 
 <script setup>
 import { reactive, getCurrentInstance } from 'vue'
-import { RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { useGuestStore } from '@/stores/guest'
+
+const router = useRouter()
+const guestStore = useGuestStore()
+
+const handleBookNow = () => {
+  if (!guestStore.isLoggedIn) {
+    sessionStorage.setItem('pendingBooking', 'true')
+    window.location.href = import.meta.env.VITE_GOOGLE
+  } else {
+    router.push('/booking')
+  }
+}
 
 const form = reactive({
   name: '',

@@ -36,10 +36,10 @@
             </div>
           </nav>
 
-          <RouterLink to="/booking"
-            class="hidden rounded-xl bg-[color:rgba(54,226,123,0.16)] px-4 py-2 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)] md:inline-flex">
+          <button @click="handleBookNow"
+            class="hidden rounded-xl bg-[color:rgba(54,226,123,0.16)] px-4 py-2 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)] md:inline-flex cursor-pointer">
             Book Now
-          </RouterLink>
+          </button>
 
           <!-- Notification Bell (only when logged in) -->
           <div v-if="isLoggedIn" class="relative" ref="notifTriggerRef">
@@ -248,11 +248,10 @@
               </div>
             </div>
           </div>
-          <RouterLink to="/booking"
-            class="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-4 py-3 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)]"
-            @click="open = false">
+          <button @click="handleBookNow"
+            class="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-4 py-3 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)] cursor-pointer">
             Book Now
-          </RouterLink>
+          </button>
           <div class="mt-6 grid gap-2">
             <RouterLink v-for="item in mobileItems" :key="item.to" :to="item.to"
               class="flex items-center justify-between rounded-xl border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.55)] px-4 py-3 text-sm text-white/85 transition hover:text-white"
@@ -397,6 +396,16 @@ const mobileItems = [
 const router = useRouter()
 const route = useRoute()
 const guestStore = useGuestStore()
+
+const handleBookNow = () => {
+  open.value = false
+  if (!guestStore.isLoggedIn) {
+    sessionStorage.setItem('pendingBooking', 'true')
+    window.location.href = import.meta.env.VITE_GOOGLE
+  } else {
+    router.push('/booking')
+  }
+}
 
 const isLoggedIn = computed(() => guestStore.isLoggedIn)
 const customerName = computed(() => guestStore.name)
