@@ -31,8 +31,7 @@
       <!-- Actual rooms grid -->
       <div v-else-if="visibleRooms.length" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <article v-for="room in visibleRooms" :key="room.id"
-          class="overflow-hidden rounded-3xl border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] transition-opacity duration-200"
-          :class="{ 'opacity-60': !room.isAvailable }">
+          class="overflow-hidden rounded-3xl border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] transition-opacity duration-200">
           
           <div class="relative h-52">
             <img :src="room.image" :alt="room.name" class="h-full w-full object-cover" loading="lazy" />
@@ -49,18 +48,13 @@
               </div>
             </div>
 
-            <div v-if="!room.isAvailable" class="absolute left-4 top-4">
-              <div class="rounded-full border border-white/10 bg-black/45 px-3 py-1 text-xs font-semibold text-white/85 backdrop-blur">
-                Unavailable
-              </div>
-            </div>
           </div>
 
           <div class="p-5">
             <dl class="grid gap-3 text-sm">
               <div class="flex items-center justify-between gap-3">
-                <dt class="text-white/60">Size</dt>
-                <dd class="font-medium">{{ room.size }}</dd>
+                <dt class="text-white/60">Floor</dt>
+                <dd class="font-medium">{{ room.floor }}</dd>
               </div>
               <div class="flex items-center justify-between gap-3">
                 <dt class="text-white/60">Beds</dt>
@@ -74,15 +68,20 @@
               </div>
             </dl>
 
+            <div v-if="room.bookedDates && room.bookedDates.length" class="mt-4 border-t border-white/10 pt-3">
+              <div class="text-[11px] font-medium uppercase tracking-wider text-white/50 mb-2">Booked Dates</div>
+              <div class="flex flex-wrap gap-1.5">
+                <span v-for="d in room.bookedDates" :key="d" class="rounded bg-red-500/15 border border-red-500/20 px-2 py-1 text-xs text-red-200">
+                  {{ d }}
+                </span>
+              </div>
+            </div>
+
             <div class="mt-5 flex items-center gap-3">
-              <button v-if="room.isAvailable" type="button"
+              <button type="button"
                 class="inline-flex flex-1 items-center justify-center rounded-xl bg-[color:rgba(54,226,123,0.16)] px-4 py-3 text-sm font-semibold text-[color:var(--color-primary)] ring-1 ring-[color:rgba(54,226,123,0.28)] transition hover:bg-[color:rgba(54,226,123,0.22)]"
                 @click="handleBookNow(room.id)">
                 Book Now
-              </button>
-              <button v-else type="button" disabled
-                class="inline-flex flex-1 cursor-not-allowed items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white/50">
-                Not Available
               </button>
               <button type="button"
                 class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/80 transition hover:bg-white/10"
@@ -209,15 +208,22 @@ const mapRoom = (r) => {
   if (capacity >= 3) facilities.push('Family-friendly')
   if (String(r?.type || '').toLowerCase().includes('suite')) facilities.push('Living area')
 
+  const bookedDates = (r.reservations || []).map(res => {
+    const ci = new Date(res.check_in).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+    const co = new Date(res.check_out).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+    return `${ci} - ${co}`
+  })
+
   return {
     id: r.id,
     apiRoomId: r.id,
     status,
     isAvailable,
+    bookedDates,
     name: r?.type ? String(r.type) : `Room ${r?.number ?? ''}`.trim(),
     tagline: `Floor ${r?.floor ?? '-'} • Capacity ${capacity}`,
     price: r?.price ?? 0,
-    size: '—',
+    floor: r?.floor ?? '—',
     beds: capacity >= 3 ? 'Family setup' : 'Standard bedding',
     facilities,
     details: `Room No. ${r?.number ?? '-'} with modern comfort and calm service.`,
@@ -232,7 +238,7 @@ onMounted(async () => {
     const res = await apiClient.get('/public/rooms')
     rooms.value = Array.isArray(res)
       ? res
-          .filter(r => String(r?.status ?? 'available') === 'available')
+          .filter(r => String(r?.status ?? '').toLowerCase() !== 'maintenance')
           .map(mapRoom)
       : []
     visibleCount.value = 6

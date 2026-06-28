@@ -62,10 +62,9 @@
 
           <div class="mt-5 grid gap-4 sm:grid-cols-2">
             <button v-for="room in visibleRoomOptions" :key="room.id" type="button"
-              class="rounded-3xl border border-white/10 bg-white/5 p-5 text-left transition" :class="[
-                selectedRoom?.id === room.id ? 'ring-2 ring-[color:rgba(54,226,123,0.35)]' : '',
-                room.isAvailable ? 'hover:bg-white/10' : 'cursor-not-allowed opacity-55'
-              ]" :disabled="!room.isAvailable" @click="room.isAvailable && selectRoom(room)">
+              class="rounded-3xl border border-white/10 bg-white/5 p-5 text-left transition hover:bg-white/10" :class="[
+                selectedRoom?.id === room.id ? 'ring-2 ring-[color:rgba(54,226,123,0.35)]' : ''
+              ]" @click="selectRoom(room)">
               <div class="mb-4 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
                 <img :src="room.image" :alt="room.name" class="h-28 w-full object-cover" loading="lazy" />
               </div>
@@ -86,14 +85,18 @@
                 </div>
               </div>
 
-              <div v-if="!room.isAvailable" class="mt-3">
-                <span
-                  class="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs font-semibold text-white/75">Unavailable</span>
-              </div>
-
               <div class="mt-3 flex flex-wrap gap-2">
                 <span v-for="t in room.tags" :key="t"
                   class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/75">{{ t }}</span>
+              </div>
+
+              <div v-if="room.bookedDates && room.bookedDates.length" class="mt-4 border-t border-white/10 pt-3 text-left">
+                <div class="text-[11px] font-medium uppercase tracking-wider text-white/50 mb-2">Booked Dates</div>
+                <div class="flex flex-wrap gap-1.5">
+                  <span v-for="d in room.bookedDates" :key="d" class="rounded bg-red-500/15 border border-red-500/20 px-2 py-1 text-[10px] text-red-200">
+                    {{ d }}
+                  </span>
+                </div>
               </div>
             </button>
           </div>
@@ -513,10 +516,7 @@ const confirm = async () => {
     toast?.warning('Please select a room type.')
     return
   }
-  if (selectedRoom.value && selectedRoom.value.isAvailable === false) {
-    toast?.warning('This room is not available. Please select another room.')
-    return
-  }
+
   if (!guest.phone) {
     toast?.warning('Please enter your phone/WhatsApp.')
     return
@@ -779,6 +779,13 @@ const mapRoomOption = (r) => {
   const capacity = Number(r?.capacity ?? 2)
   const status = String(r?.status ?? 'available')
   const isAvailable = status === 'available'
+  
+  const bookedDates = (r.reservations || []).map(res => {
+    const ci = new Date(res.check_in).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+    const co = new Date(res.check_out).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+    return `${ci} - ${co}`
+  })
+
   return {
     id: r.id,
     name: r?.type ? String(r.type) : `Room ${r?.number ?? ''}`.trim(),
@@ -787,6 +794,7 @@ const mapRoomOption = (r) => {
     tags: ['Wi‑Fi', capacity >= 4 ? 'Family' : 'Couples', 'Modern'],
     status,
     isAvailable,
+    bookedDates,
     image,
   }
 }
@@ -801,7 +809,7 @@ onMounted(async () => {
     const res = await apiClient.get('/public/rooms')
     roomOptions.value = Array.isArray(res)
       ? res
-        .filter(r => String(r?.status ?? 'available') === 'available')
+        .filter(r => String(r?.status ?? '').toLowerCase() !== 'maintenance')
         .map(mapRoomOption)
       : []
     visibleRoomsCount.value = 4
