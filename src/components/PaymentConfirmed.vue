@@ -1,28 +1,21 @@
 <template>
   <transition name="modal-fade">
     <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <!-- Backdrop -->
       <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-md transition-opacity" @click="close"></div>
       
-      <!-- Modal Panel -->
       <div class="relative w-full max-w-md transform overflow-hidden rounded-[2rem] bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-2xl p-8 text-left align-middle shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all ring-1 ring-white/20 dark:ring-white/10">
         
-        <!-- Decorative Glows -->
         <div class="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-green-500/20 blur-[40px] pointer-events-none"></div>
         <div class="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-emerald-500/10 blur-[40px] pointer-events-none"></div>
 
         <div class="relative flex flex-col items-center text-center">
-          <!-- Animated Success Icon -->
           <div class="relative mb-6 mt-2">
-            <!-- Ripple Effect -->
             <div class="absolute inset-0 animate-ping rounded-full bg-green-500/30"></div>
-            <!-- Icon Circle -->
             <div class="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-tr from-green-500 to-emerald-400 shadow-[0_0_30px_rgba(34,197,94,0.4)]">
               <span class="material-symbols-outlined text-[48px] text-white">verified</span>
             </div>
           </div>
 
-          <!-- Text content -->
           <h3 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             {{ title }}
           </h3>
@@ -30,7 +23,6 @@
             {{ description }}
           </p>
 
-          <!-- Buttons -->
           <div class="w-full space-y-3">
             <button
               type="button"

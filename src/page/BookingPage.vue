@@ -206,7 +206,6 @@
 
           <div v-if="confirmed" class="mt-6 rounded-3xl border border-white/10 bg-white/5 p-5">
             
-            <!-- KHQR Header -->
             <div class="flex items-start gap-3">
               <span class="material-symbols-outlined text-[24px] text-white">qr_code_scanner</span>
               <div>
@@ -215,7 +214,6 @@
               </div>
             </div>
 
-            <!-- QR Code Section matching the image border -->
             <div class="mt-6 flex justify-center">
               <div class="inline-block border-2 border-[#E12424] bg-white p-2">
                 <div v-if="paymentLoading" class="flex h-[200px] w-[200px] items-center justify-center bg-black/10 text-center text-xs text-black/60">
@@ -237,7 +235,6 @@
               </div>
             </div>
 
-            <!-- KHQR Info Block -->
             <div class="mt-6 grid gap-2 border-b border-white/10 pb-4 text-sm">
               <div class="flex justify-between items-center text-white/80">
                 <span>Merchant</span>
@@ -261,13 +258,11 @@
               </div>
             </div>
 
-            <!-- Timer -->
             <div v-if="!paymentConfirmed && !paymentCancelled" class="mt-4 flex items-center justify-center gap-1.5 text-xs text-white/70">
               <span class="material-symbols-outlined text-[14px]">schedule</span>
               QR expires in: <span class="font-bold text-[#E12424]">{{ paymentTimeLeftLabel }}</span>
             </div>
 
-            <!-- Actions -->
             <div class="mt-4 grid gap-3">
               <button v-if="paymentQrUrl" type="button"
                 class="mt-3 inline-flex h-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-5 text-sm font-semibold text-white/85 transition hover:bg-white/10"
@@ -408,7 +403,6 @@ const guest = reactive({
   notes: '',
 })
 
-// Populate guest information if logged in
 const loadGuestInfo = () => {
   if (guestStore.isLoggedIn && guestStore.guest) {
     guest.name = guestStore.guest.name || ''
@@ -417,21 +411,17 @@ const loadGuestInfo = () => {
   }
 }
 
-// Watch for guest login changes
 watch(() => guestStore.isLoggedIn, () => {
   loadGuestInfo()
 })
 
-// Watch for roomId changes in query
 watch(() => route.query.roomId, (newRoomId) => {
   if (newRoomId && roomOptions.value.length > 0) {
     const preSelectedRoom = roomOptions.value.find(r => r.id === Number(newRoomId))
     if (preSelectedRoom) {
       selectedRoom.value = preSelectedRoom
       toast?.info(`Room pre-selected: ${preSelectedRoom.name}`)
-      // Show more rooms when one is pre-selected
       visibleRoomsCount.value = 2
-      // Scroll to room selection section
       setTimeout(() => {
         const roomSection = document.getElementById('room-selection')
         if (roomSection) {
@@ -503,7 +493,6 @@ const ensureGuestId = async () => {
   const id = created?.guest?.id
   if (!id) throw new Error('Failed to create guest.')
   guestStore.setGuest(created.guest)
-  // Assuming login token isn't needed or available immediately after public store
   return id
 }
 
@@ -553,7 +542,7 @@ const confirm = async () => {
     reservation.value = res
     confirmed.value = true
 
-    startPaymentTimer(300) // 5 minutes
+    startPaymentTimer(300)
 
     paymentLoading.value = true
     try {
@@ -682,7 +671,6 @@ const startVerifyPolling = () => {
         await confirmPayment()
       }
     } catch (e) {
-      // silent during polling
     } finally {
       paymentVerifyInFlight = false
     }
@@ -800,7 +788,6 @@ const mapRoomOption = (r) => {
 }
 
 onMounted(async () => {
-  // Load guest information if logged in
   loadGuestInfo()
 
   roomsLoading.value = true
@@ -814,16 +801,13 @@ onMounted(async () => {
       : []
     visibleRoomsCount.value = 2
 
-    // Pre-select room if roomId is provided in query
     const queryRoomId = route.query.roomId
     if (queryRoomId) {
       const preSelectedRoom = roomOptions.value.find(r => r.id === Number(queryRoomId))
       if (preSelectedRoom) {
         selectedRoom.value = preSelectedRoom
         toast?.info(`Room pre-selected: ${preSelectedRoom.name}`)
-        // Show more rooms when one is pre-selected
         visibleRoomsCount.value = 2
-        // Scroll to room selection section
         setTimeout(() => {
           const roomSection = document.getElementById('room-selection')
           if (roomSection) {

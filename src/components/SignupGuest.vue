@@ -130,7 +130,6 @@ const submit = async () => {
     guestStore.setGuest(guest)
     toast?.success('Account created and signed in.')
 
-    // Check if there's a pending booking roomId
     const pendingRoomId = sessionStorage.getItem('pendingBookingRoomId')
     if (pendingRoomId) {
       sessionStorage.removeItem('pendingBookingRoomId')

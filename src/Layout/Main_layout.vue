@@ -41,7 +41,6 @@
             Book Now
           </button>
 
-          <!-- Notification Bell (only when logged in) -->
           <div v-if="isLoggedIn" class="relative" ref="notifTriggerRef">
             <button
               type="button"
@@ -56,7 +55,6 @@
               >{{ unreadNotifCount > 9 ? '9+' : unreadNotifCount }}</span>
             </button>
 
-            <!-- Mobile backdrop -->
             <transition name="fade">
               <div
                 v-if="notifPanelOpen"
@@ -77,12 +75,10 @@
                   shadow-2xl shadow-black/40 backdrop-blur-xl
                 "
               >
-                <!-- Mobile drag handle -->
                 <div class="flex justify-center pt-3 pb-1 md:hidden">
                   <div class="h-1 w-10 rounded-full bg-white/20"></div>
                 </div>
 
-                <!-- Header -->
                 <div class="flex items-center justify-between border-b border-white/10 px-4 py-3 bg-[#36E27B]/5">
                   <h3 class="flex items-center gap-2 text-sm font-semibold text-white">
                     <span class="material-symbols-outlined text-[16px] text-[#36E27B]">notifications_active</span>
@@ -100,7 +96,6 @@
                   </div>
                 </div>
 
-                <!-- List -->
                 <div class="max-h-[60vh] md:max-h-80 overflow-y-auto">
                   <div v-if="notifLoading" class="flex flex-col items-center gap-2 p-8 text-center text-sm text-white/50">
                     <span class="material-symbols-outlined animate-spin text-2xl text-[#36E27B]">progress_activity</span>
@@ -119,7 +114,6 @@
                       class="flex gap-3 px-4 py-3.5 transition-colors hover:bg-white/5 cursor-pointer"
                       :class="{ 'bg-[#36E27B]/5': !notif._read }"
                     >
-                      <!-- Icon -->
                       <div class="mt-0.5 flex-shrink-0">
                         <div v-if="notif.type === 'reservation'" class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#36E27B]/10">
                           <span class="material-symbols-outlined text-[16px] text-[#36E27B]">calendar_add_on</span>
@@ -131,7 +125,6 @@
                           <span class="material-symbols-outlined text-[16px] text-red-400">cancel</span>
                         </div>
                       </div>
-                      <!-- Content -->
                       <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between gap-2">
                           <p class="text-sm font-medium text-white leading-snug">{{ notif.title }}</p>
@@ -143,7 +136,6 @@
                   </ul>
                 </div>
 
-                <!-- Mobile safe-area padding -->
                 <div class="h-safe-bottom md:hidden pb-2"></div>
               </div>
             </transition>
@@ -155,7 +147,6 @@
             <span class="material-symbols-outlined">menu</span>
           </button>
 
-          <!-- Account Profile -->
           <div class="relative cursor-pointer" @mouseenter="isAccountMenuHover = true" @mouseleave="isAccountMenuHover = false">
             <div class="relative" @click="toggleAccountMenu">
               <div class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#36E27B]/20 to-[#36E27B]/5 ring-1 ring-white/30">
@@ -264,15 +255,11 @@
     </transition>
   </header>
 
-  <!-- ===== CHAT MODAL ===== -->
   <transition name="chat-modal">
     <div v-if="chatOpen" class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4" @click.self="closeChat">
-      <!-- Backdrop -->
       <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" @click="closeChat"></div>
 
-      <!-- Chat window -->
       <div class="relative w-full max-w-sm rounded-3xl border border-white/10 bg-gradient-to-b from-[#1A1F2C] to-[#0D1811] shadow-2xl shadow-black/60 overflow-hidden flex flex-col" style="max-height: 80vh;">
-        <!-- Chat header -->
         <div class="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-[#36E27B]/5 flex-shrink-0">
           <div class="relative flex-shrink-0">
             <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#36E27B]/30 to-[#36E27B]/10 ring-1 ring-[#36E27B]/30">
@@ -289,16 +276,13 @@
           </button>
         </div>
 
-        <!-- Chat body -->
         <div class="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-          <!-- Date divider -->
           <div class="flex items-center gap-2">
             <div class="flex-1 h-px bg-white/10"></div>
             <span class="text-[10px] text-white/30 px-2">{{ chatDate }}</span>
             <div class="flex-1 h-px bg-white/10"></div>
           </div>
 
-          <!-- Bot message bubble -->
           <div class="flex gap-2 items-end">
             <div class="flex-shrink-0 flex h-7 w-7 items-center justify-center rounded-full bg-[#36E27B]/10 ring-1 ring-[#36E27B]/20">
               <img src="@/assets/Hotel_icon.png" alt="Bot" class="h-4 w-4" />
@@ -312,7 +296,6 @@
           </div>
         </div>
 
-        <!-- Chat footer -->
         <div class="flex-shrink-0 border-t border-white/10 px-4 py-3 bg-[#0D1811]/60">
           <div class="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
             <span class="material-symbols-outlined text-white/30 text-[18px]">lock</span>
@@ -322,7 +305,6 @@
       </div>
     </div>
   </transition>
-  <!-- ===== END CHAT MODAL ===== -->
 
   <main class="flex-1 pt-20">
     <slot />
@@ -426,7 +408,6 @@ const logout = () => {
   router.push('/')
 }
 
-// ==================== NOTIFICATIONS ====================
 const notifPanelOpen = ref(false)
 const notifTriggerRef = ref(null)
 const notifDropdownRef = ref(null)
@@ -506,7 +487,6 @@ const handleClickOutside = (e) => {
   }
 }
 
-// ==================== CHAT MODAL ====================
 const chatOpen = ref(false)
 const chatMessage = ref(null)
 
@@ -528,7 +508,6 @@ const openChat = (notif) => {
   chatMessage.value = notif
   chatOpen.value = true
   notifPanelOpen.value = false
-  // Mark as read
   if (!notif._read) {
     notif._read = true
     const set = getReadSet()
@@ -541,7 +520,6 @@ const closeChat = () => {
   chatOpen.value = false
   chatMessage.value = null
 }
-// ==================== END CHAT MODAL ====================
 
 let notifInterval = null
 const startPolling = () => {
@@ -552,7 +530,6 @@ const startPolling = () => {
 const stopPolling = () => {
   if (notifInterval) { clearInterval(notifInterval); notifInterval = null }
 }
-// ==================== END NOTIFICATIONS ====================
 
 onMounted(() => {
   guestStore.hydrate()

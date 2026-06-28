@@ -5,14 +5,11 @@
       <p class="text-sm text-white/65">Choose a room that matches your travel style — calm, modern, and premium.</p>
     </div>
 
-    <!-- Error state -->
     <div v-if="error" class="mt-9 rounded-3xl border border-red-500/30 bg-red-500/10 p-6 text-sm text-white/80">
       {{ error }}
     </div>
 
-    <!-- Loading + Content -->
     <div v-else class="mt-9">
-      <!-- Skeleton loading state -->
       <div v-if="isLoading" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div v-for="n in 6" :key="n" class="overflow-hidden rounded-3xl border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)]">
           <div class="relative h-52 animate-pulse bg-gray-700/30" />
@@ -28,7 +25,6 @@
         </div>
       </div>
 
-      <!-- Actual rooms grid -->
       <div v-else-if="visibleRooms.length" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <article v-for="room in visibleRooms" :key="room.id"
           class="overflow-hidden rounded-3xl border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] transition-opacity duration-200">
@@ -93,7 +89,6 @@
         </article>
       </div>
 
-      <!-- Load more -->
       <div v-if="!isLoading && rooms.length > visibleCount" class="mt-8 flex justify-center">
         <button type="button" :disabled="isLoading"
           class="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white/85 transition hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -106,14 +101,12 @@
         </button>
       </div>
 
-      <!-- Empty state after loading -->
       <div v-else-if="!isLoading && !rooms.length" class="mt-12 text-center text-white/60">
         <p class="text-lg">No rooms available at the moment.</p>
         <p class="mt-2 text-sm">Please check back later or contact us directly.</p>
       </div>
     </div>
 
-    <!-- Room details modal -->
     <transition name="fade">
       <div v-if="selected" class="fixed inset-0 z-50" @click.self="selected = null">
         <div class="absolute inset-0 bg-black/70" />
@@ -190,9 +183,7 @@ const handleBookNow = (roomId) => {
   if (guestStore.isLoggedIn) {
     router.push({ path: '/booking', query: { roomId } })
   } else {
-    // Store the intended roomId for after login
     sessionStorage.setItem('pendingBookingRoomId', roomId)
-    // Redirect to Google login
     window.location.href = import.meta.env.VITE_GOOGLE
   } 
 }

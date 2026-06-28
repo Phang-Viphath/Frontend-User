@@ -1,7 +1,6 @@
 <template>
   <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8 text-white">
     
-    <!-- Header Area -->
     <div class="mb-12 flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
       <div>
         <div class="inline-flex items-center gap-2 rounded-full bg-[color:rgba(54,226,123,0.1)] px-3 py-1 text-xs font-medium text-[color:var(--color-primary)] mb-4 ring-1 ring-[color:rgba(54,226,123,0.2)]">
@@ -18,7 +17,6 @@
       </div>
     </div>
 
-    <!-- State: Not Logged In -->
     <div v-if="!isLoggedIn" class="relative overflow-hidden rounded-[2rem] bg-[color:rgba(17,33,23,0.6)] border border-[color:var(--color-surface-border)] backdrop-blur-xl p-10 text-center shadow-xl">
       <span class="material-symbols-outlined text-[48px] text-white/40 mb-4">lock</span>
       <h3 class="text-xl font-semibold text-white">Authentication Required</h3>
@@ -34,7 +32,6 @@
 
     <div v-else class="relative z-10">
       
-      <!-- State: Loading Skeleton -->
       <div v-if="isLoading" class="grid gap-6">
         <div v-for="n in 3" :key="n" class="group relative overflow-hidden rounded-[2rem] border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] p-6 sm:p-8 backdrop-blur-xl shadow-sm">
           <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between animate-pulse">
@@ -67,14 +64,12 @@
         </div>
       </div>
 
-      <!-- State: Error -->
       <div v-else-if="error" class="rounded-[2rem] border border-red-500/20 bg-red-500/10 p-8 text-center backdrop-blur-md">
         <span class="material-symbols-outlined text-[40px] text-red-500 mb-3">error</span>
         <h3 class="text-lg font-semibold text-red-400">Oops, something went wrong</h3>
         <p class="mt-2 text-sm text-red-300">{{ error }}</p>
       </div>
 
-      <!-- State: Empty -->
       <div v-else-if="items.length === 0" class="flex flex-col items-center justify-center rounded-[2rem] border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] backdrop-blur-xl p-16 text-center shadow-lg">
         <div class="h-24 w-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
           <span class="material-symbols-outlined text-[40px] text-white/40">luggage</span>
@@ -89,19 +84,16 @@
         </RouterLink>
       </div>
 
-      <!-- State: Loaded -->
       <div v-else class="grid gap-6">
         <div
           v-for="r in items"
           :key="r.id"
           class="group relative overflow-hidden rounded-[2rem] border border-[color:var(--color-surface-border)] bg-[color:rgba(17,33,23,0.6)] p-6 sm:p-8 backdrop-blur-xl shadow-sm hover:shadow-2xl hover:shadow-green-500/10 transition-all duration-300 hover:-translate-y-1"
         >
-          <!-- Decorative accent line on hover -->
           <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-green-400 to-emerald-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
 
           <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             
-            <!-- Left: Room & Dates -->
             <div class="flex-1 min-w-0 flex gap-5">
               <div class="hidden sm:flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[color:rgba(54,226,123,0.1)] text-[color:var(--color-primary)] border border-[color:rgba(54,226,123,0.2)]">
                 <span class="material-symbols-outlined text-[32px]">bed</span>
@@ -134,7 +126,6 @@
               </div>
             </div>
 
-            <!-- Right: Price & Actions -->
             <div class="flex flex-col items-start lg:items-end gap-4 shrink-0 border-t border-white/10 lg:border-t-0 pt-5 lg:pt-0">
               <div class="text-left lg:text-right">
                 <p class="text-xs font-semibold text-white/40 uppercase tracking-widest mb-1">Total Amount</p>
@@ -166,7 +157,6 @@
             </div>
           </div>
 
-          <!-- Details Footer -->
           <div class="mt-6 flex flex-wrap items-center gap-5 rounded-xl bg-black/20 p-4 text-sm border border-white/5">
             <div class="flex items-center gap-2 text-white/65">
               <span class="material-symbols-outlined text-[18px]">category</span>
