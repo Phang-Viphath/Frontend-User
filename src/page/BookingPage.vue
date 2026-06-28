@@ -337,7 +337,7 @@ const roomOptions = ref([])
 const roomsLoading = ref(true)
 const roomsError = ref('')
 
-const visibleRoomsCount = ref(4)
+const visibleRoomsCount = ref(2)
 const visibleRoomOptions = computed(() => {
   if (selectedRoom.value) {
     const otherRooms = roomOptions.value.filter(r => r.id !== selectedRoom.value.id)
@@ -362,7 +362,7 @@ const totalPrice = computed(() => {
 })
 
 const loadMoreRooms = () => {
-  visibleRoomsCount.value += 4
+  visibleRoomsCount.value += 2
 }
 
 const selectedRoom = ref(null)
@@ -430,7 +430,7 @@ watch(() => route.query.roomId, (newRoomId) => {
       selectedRoom.value = preSelectedRoom
       toast?.info(`Room pre-selected: ${preSelectedRoom.name}`)
       // Show more rooms when one is pre-selected
-      visibleRoomsCount.value = 4
+      visibleRoomsCount.value = 2
       // Scroll to room selection section
       setTimeout(() => {
         const roomSection = document.getElementById('room-selection')
@@ -445,7 +445,7 @@ watch(() => route.query.roomId, (newRoomId) => {
 const step = computed(() => {
   if (!availability.checkIn || !availability.checkOut) return 1
   if (!selectedRoom.value) return 2
-  return 4
+  return 2
 })
 
 const toast = getCurrentInstance()?.appContext.config.globalProperties.$toast
@@ -791,7 +791,7 @@ const mapRoomOption = (r) => {
     name: r?.type ? String(r.type) : `Room ${r?.number ?? ''}`.trim(),
     price: r?.price ?? 0,
     summary: `Floor ${r?.floor ?? '-'} • Capacity ${capacity}`,
-    tags: ['Wi‑Fi', capacity >= 4 ? 'Family' : 'Couples', 'Modern'],
+    tags: ['Wi‑Fi', capacity >= 3 ? 'Family' : 'Couples', 'Modern'],
     status,
     isAvailable,
     bookedDates,
@@ -812,7 +812,7 @@ onMounted(async () => {
         .filter(r => String(r?.status ?? '').toLowerCase() !== 'maintenance')
         .map(mapRoomOption)
       : []
-    visibleRoomsCount.value = 4
+    visibleRoomsCount.value = 2
 
     // Pre-select room if roomId is provided in query
     const queryRoomId = route.query.roomId
@@ -822,7 +822,7 @@ onMounted(async () => {
         selectedRoom.value = preSelectedRoom
         toast?.info(`Room pre-selected: ${preSelectedRoom.name}`)
         // Show more rooms when one is pre-selected
-        visibleRoomsCount.value = 4
+        visibleRoomsCount.value = 2
         // Scroll to room selection section
         setTimeout(() => {
           const roomSection = document.getElementById('room-selection')
