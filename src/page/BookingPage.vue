@@ -16,12 +16,12 @@
           <form class="mt-5 grid gap-4" @submit.prevent="checkAvailability">
             <div class="grid gap-4 sm:grid-cols-2">
               <label class="grid gap-1">
-                <span class="text-xs text-white/60">Check-in</span>
+                <span class="text-xs text-white/60">Check-in Date Time 12:00 PM</span>
                 <input v-model="availability.checkIn" type="date"
                   class="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none transition focus:border-white/25" />
               </label>
               <label class="grid gap-1">
-                <span class="text-xs text-white/60">Check-out</span>
+                <span class="text-xs text-white/60">Check-out Date Time 12:00 PM</span>
                 <input v-model="availability.checkOut" type="date"
                   class="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none transition focus:border-white/25" />
               </label>
@@ -171,11 +171,11 @@
 
           <div class="mt-4 grid gap-3 text-sm">
             <div class="flex items-center justify-between">
-              <span class="text-white/60">Check-in</span>
+              <span class="text-white/60">Check-in Date Time 12:00 PM</span>
               <span class="font-medium">{{ availability.checkIn || '—' }}</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-white/60">Check-out</span>
+              <span class="text-white/60">Check-out Date Time 12:00 PM</span>
               <span class="font-medium">{{ availability.checkOut || '—' }}</span>
             </div>
             <div class="flex items-center justify-between">

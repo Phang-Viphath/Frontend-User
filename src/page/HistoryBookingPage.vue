@@ -241,8 +241,8 @@ const printInvoice = (r) => {
           <h3>Reservation Details</h3>
           <p><strong>Invoice No:</strong> #${r.id}</p>
           <p><strong>Date Issued:</strong> ${todayDate}</p>
-          <p><strong>Check-in:</strong> ${checkIn}</p>
-          <p><strong>Check-out:</strong> ${checkOut}</p>
+          <p><strong>Check-in Date Time 12:00 PM:</strong> ${checkIn}</p>
+          <p><strong>Check-out Date Time 12:00 PM:</strong> ${checkOut}</p>
           <div class="status-badge ${status.toLowerCase()}">${status}</div>
         </div>
       </div>

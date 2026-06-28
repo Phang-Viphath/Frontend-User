@@ -61,12 +61,12 @@
               <form class="grid mt-2 gap-4" @submit.prevent="goBooking">
                 <div class="grid gap-4 sm:grid-cols-2">
                   <label class="grid gap-1">
-                    <span class="text-xs text-white/60">Check-in</span>
+                    <span class="text-xs text-white/60">Check-in Date Time 12:00 PM</span>
                     <input v-model="form.checkIn" type="date"
                       class="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none transition focus:border-white/25" />
                   </label>
                   <label class="grid gap-1">
-                    <span class="text-xs text-white/60">Check-out</span>
+                    <span class="text-xs text-white/60">Check-out Date Time 12:00 PM</span>
                     <input v-model="form.checkOut" type="date"
                       class="h-11 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white outline-none transition focus:border-white/25" />
                   </label>
